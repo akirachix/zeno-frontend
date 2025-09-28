@@ -57,7 +57,7 @@ export default function LoginPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center px-4">
+      <div className="min-h-screen w-full  flex items-center justify-center px-4">
         <div className="text-center">
           <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto mb-4 animate-spin"></div>
           <p className="text-white text-base">Loading...</p>
@@ -67,10 +67,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[url('/images/background.png')] bg-cover">
-      <div className="2xl:w-250 xl:w-150  xl:px-10 2xl:px-30  2xl:h-170  rounded-2xl flex flex-col items-center px-30 py-14 bg-black/0 border border-gray-600 shadow-lg shadow-gray-600">
-        <h2 className="2xl:text-[50px] lg:text-[30px] xl:text-[40px] lg:mb-10 xl:mb-10 font-bold text-cyan-200 2xl:mb-28 w-full text-left">Sign In</h2>
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-7">
+    <div className="min-h-screen w-full flex items-center justify-center ">
+      <div className="2xl:w-250 xl:w-150 xl:px-10 2xl:px-30 2xl:h-170  rounded-2xl flex flex-col items-center px-10 py-14 bg-black/0 border border-gray-600 shadow-lg shadow-gray-600">
+        <h2 className="2xl:text-[50px] lg:text-[30px] xl:text-[40px] lg:mb-10 xl:mb-10 font-bold text-cyan-200 2xl:mb-28 md:w-full w-3/4 text-left">Sign In</h2>
+        <form onSubmit={handleSubmit} className="md:w-full w-3/4 flex flex-col gap-7">
           <div className="relative flex items-center border-b border-white/60">
             <MailOutlineIcon className="text-white mr-3 " />
             <input

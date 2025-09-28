@@ -142,7 +142,7 @@ export default function ChatInput({ conversationId, user, sendMessage, onRunCrea
   }, []);
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-1">
+    <div className="w-full xl:max-w-3xl md:max-w-xl lg:max-w-2xl mx-auto space-y-1">
       {filePreviews.length > 0 && (
         <div className="flex flex-wrap gap-2 px-4">
           {filePreviews.map((item, index) => renderFilePreview(item, index))}
