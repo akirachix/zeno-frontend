@@ -148,6 +148,7 @@ export default function ChatPage() {
       setConversations(prev => [convData, ...prev]);
       setSelectedConversationId(convData.conversation_id);
     }
+    
 
     setShowGreeting(false);
 
