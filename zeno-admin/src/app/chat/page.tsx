@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Sidebar from "../sharedComponents/Sidebar";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "../sharedComponents/ChatInput";
-import { RunFile, RunLike} from "../utils/types/chat"; 
+import { RunFile, RunLike } from "../utils/types/chat"; 
 import { Conversation } from "../utils/types/runs";
 import { useConversationsWithRuns } from "../hooks/useConversationWithRuns";
 import { useRuns } from "../hooks/useFetchPostRuns";
@@ -42,7 +42,9 @@ export default function ChatPage() {
     setConversations,
   } = useConversationsWithRuns(token);
 
-  const { runs, sendMessage, setRuns } = useRuns(user);
+  const { runs, sendMessage, setRuns, clearRuns } = useRuns(user);
+
+  const hasInitializedRuns = useRef(false);
 
   useEffect(() => {
     if (runs.length > 0) {
@@ -51,38 +53,49 @@ export default function ChatPage() {
   }, [runs]);
 
   useEffect(() => {
+    if (selectedConversationId === null) {
+      setRuns([]);
+      setShowGreeting(true);
+      hasInitializedRuns.current = false;
+      return;
+    }
+
     const selectedConversation = conversations.find(
       (conversation) => conversation.conversation_id === selectedConversationId
     );
-    if (selectedConversation && selectedConversation.runs) {
-      const mappedRuns = selectedConversation.runs.map(run => ({
-        id: String(run.id),
-        user_input: run.user_input,
-        final_output: run.final_output,
-        output_artifacts: run.output_artifacts || [],
-        status: run.status?.toLowerCase() || "completed",
-        started_at: run.started_at,
-        files: [],
-        _optimistic: false,
-      }));
+
+    if (selectedConversation && selectedConversation.runs && !hasInitializedRuns.current) {
+      const mappedRuns = selectedConversation.runs
+        .sort((a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime()) 
+        .map(run => ({
+          id: String(run.id),
+          user_input: run.user_input,
+          final_output: run.final_output,
+          output_artifacts: run.output_artifacts || [],
+          status: run.status?.toLowerCase() || "completed",
+          started_at: run.started_at,
+          files: [],
+          _optimistic: false,
+        }));
+
       setRuns(mappedRuns);
       setShowGreeting(mappedRuns.length === 0);
-    } else {
-      setRuns([]);
-      setShowGreeting(true);
+      hasInitializedRuns.current = true; 
     }
   }, [selectedConversationId, conversations, setRuns]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [runs]);
+    return () => {
+      hasInitializedRuns.current = false;
+    };
+  }, [selectedConversationId]);
 
   if (!user || (role !== 'User' && role !== 'Admin')) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center px-4">
         <div className="text-center">
         </div>
-        </div>
+      </div>
     );
   }
 
@@ -125,6 +138,8 @@ export default function ChatPage() {
 
     setConversations((prev) => [data!, ...prev]);
     setSelectedConversationId(data!.conversation_id);
+    clearRuns(); 
+    hasInitializedRuns.current = false;
   }
 
   async function handleRenameConversation(id: number, title: string) {
@@ -150,10 +165,13 @@ export default function ChatPage() {
       if (selectedConversationId === id) {
         if (updated.length > 0) {
           setSelectedConversationId(updated[0].conversation_id);
+          clearRuns();
+          hasInitializedRuns.current = false;
         } else {
           setSelectedConversationId(null);
           setRuns([]);
           setShowGreeting(true);
+          hasInitializedRuns.current = false;
         }
       }
       await fetchConvos();
@@ -203,6 +221,8 @@ export default function ChatPage() {
         finalConversationId = String(convData.conversation_id);
         setConversations((prev) => [convData, ...prev]);
         setSelectedConversationId(convData.conversation_id);
+        clearRuns(); 
+        hasInitializedRuns.current = false;
       }
 
       setShowGreeting(false);
@@ -256,16 +276,16 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen text-white">
+    <div className="flex h-screen text-white ">
       <Sidebar
         conversations={conversations}
         selectedConversationId={selectedConversationId}
         setSelectedConversationId={setSelectedConversationId}
         onAddChat={handleAddChat}
         onLogout={() => {
-        localStorage.clear();
-        router.push('/signin'); 
-  }}
+          localStorage.clear();
+          router.push('/signin'); 
+        }}
         isMobile={false}
         showSidebar={true}
         setShowSidebar={() => {}}
@@ -274,7 +294,7 @@ export default function ChatPage() {
         conversationError={conversationError}
         setConversationError={setConversationError}
       />
-      <div className="flex-1 flex flex-col h-screen bg-transparent">
+      <div className="flex-1 flex flex-col h-screen bg-transparent  ">
         <div className="flex flex-col gap-2 px-4 pt-4 pb-2 overflow-y-auto flex-1">
           {showGreeting ? (
             <div className="flex justify-center items-center h-full">
@@ -287,7 +307,7 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            <ChatMessages
+            <ChatMessages 
               runs={runs}
               onRetry={async (run) =>
                 await handleSendMessage({
@@ -299,6 +319,7 @@ export default function ChatPage() {
               }
               userId={user.id}
               runLimitError={runLimitError}
+              
             />
           )}
           <div ref={messagesEndRef} />

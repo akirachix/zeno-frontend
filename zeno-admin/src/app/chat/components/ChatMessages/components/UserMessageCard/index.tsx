@@ -5,21 +5,27 @@ import { UserMessageProps } from '../../../../../utils/types/chat';
 
 export default function UserMessage({ text, files }: UserMessageProps) {
   return (
-    <div className="flex justify-end">
-      <div className="max-w-[30%] inline-block">
+    <div className="flex justify-end mb-5">
+      <div className="max-w-[50%]">
         {text && (
-          <div className=" bg-[#9FF8F8] text-black p-3 rounded-2xl rounded-br-none  break-words overflow-x-auto whitespace-pre-line
-    max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg ">
+          <div className="bg-[#9FF8F8] text-black p-4 md:p-5 rounded-2xl rounded-br-none 
+            break-words overflow-x-auto whitespace-pre-line
+            text-base leading-relaxed 
+            md:text-lg md:leading-normal 
+            xl:text-xl xl:leading-relaxed 
+            2xl:text-2xl 2xl:leading-normal
+            max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
             {text}
           </div>
         )}
 
         {files && files.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2 justify-end">
+          <div className="flex flex-wrap gap-2.5 mt-2.5 justify-end">
             {files.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-gray-100 text-gray-900 p-2 rounded-xl text-sm shadow-md flex flex-col items-center"
+                className="bg-gray-100 text-gray-900 p-2.5 md:p-3 rounded-xl shadow-sm 
+                  flex flex-col items-center text-center min-w-[80px] md:min-w-[96px]"
               >
                 {item.file.type.startsWith("image/") ? (
                   <Image
@@ -27,20 +33,21 @@ export default function UserMessage({ text, files }: UserMessageProps) {
                     alt={item.file.name}
                     width={96}
                     height={96}
-                    className="w-24 h-24 object-cover rounded-md"
+                    className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-md mb-1.5 md:mb-2"
                   />
                 ) : (
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center mb-1.5 md:mb-2">
                     {item.file.type === 'application/pdf' ? (
-                      <FaFilePdf size={24} className="text-red-500 mb-1" />
+                      <FaFilePdf size={28} className="text-red-500" />
                     ) : (
-                      <FaFileAlt size={24} className="text-blue-500 mb-1" />
+                      <FaFileAlt size={28} className="text-blue-500" />
                     )}
-                    <span className="text-xs max-w-[100px] text-center truncate">
-                      {item.file.name}
-                    </span>
                   </div>
                 )}
+                <span className="text-xs font-medium text-gray-700 truncate px-1 
+                  md:text-sm md:px-1.5">
+                  {item.file.name}
+                </span>
               </div>
             ))}
           </div>

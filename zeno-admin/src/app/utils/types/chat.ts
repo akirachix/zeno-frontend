@@ -1,6 +1,6 @@
 export interface OutputArtifact {
   id?: string | number;
-  artifact_type: "text" | "chart" | "table";
+  artifact_type: "text" | "chart" | "table" | "progress" | "thinking";
   data: ChartData | TableData | string;
   title?: string;
 }
@@ -17,7 +17,7 @@ export type Run = {
 export type ChatMessageProps = {
   role: "user" | "agent";
   text?: string;
-  artifactType?: "text" | "chart" | "table";
+  artifactType?: "text" | "chart" | "table" | "progress" | "thinking";
   artifactData?: ChartData | TableData | string;
   loading?: boolean;
   runId?: string | number;
@@ -40,7 +40,7 @@ export type ChartData = {
 };
 
 export type ArtifactRendererProps = {
-  artifactType: "chart" | "table" | "text";
+  artifactType: "chart" | "table" | "text" | "progress" | "thinking";
   artifactData: ChartData | TableData | string;
   text?: string;
 };
@@ -60,6 +60,10 @@ export interface RunLike {
   _optimistic?: boolean;
   files?: RunFile[];
   error?: string;
+
+  // Optional fields for streaming updates
+  _thinkingContent?: string;      // concatenated "thinking" artifact data
+  _progressMessages?: string[];   // array of "progress" steps
 }
 
 export interface FileWithPreview {
@@ -83,8 +87,7 @@ export type ChatMessagesProps = {
   runs: RunLike[];
   onRetry?: (run: RunLike) => void;
   userId?: number;
-  runLimitError?: boolean
-
+  runLimitError?: boolean;
 };
 
 export type Conversation = {
